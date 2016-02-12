@@ -1,0 +1,7 @@
+menu_parser.py
+menu_parser.egg-info/PKG-INFO
+menu_parser.egg-info/SOURCES.txt
+menu_parser.egg-info/dependency_links.txt
+menu_parser.egg-info/entry_points.txt
+menu_parser.egg-info/requires.txt
+menu_parser.egg-info/top_level.txt

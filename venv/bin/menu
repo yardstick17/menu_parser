@@ -1,0 +1,10 @@
+#!/Users/zomadmin/Projects/read_image/menu_scan/new/venv/bin/python2.7
+# EASY-INSTALL-ENTRY-SCRIPT: 'menu-parser','console_scripts','menu'
+__requires__ = 'menu-parser'
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.exit(
+        load_entry_point('menu-parser', 'console_scripts', 'menu')()
+    )
