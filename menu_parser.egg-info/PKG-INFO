@@ -1,12 +1,12 @@
 Metadata-Version: 1.1
 Name: menu-parser
-Version: 0.0.4
-Summary: Tool to read images ,images formatted like standard restaurant-menu
+Version: 0.0.6
+Summary: tool to read images, images formatted like standard restaurant-menu
 Home-page: https://github.com/yardstick17/menu_parser
 Author: Amit Kushwaha
 Author-email: amit_kushwaha@outlook.com
 License: MIT License
 Download-URL: https://github.com/yardstick17/menu_parser/tarball/0.1
 Description: UNKNOWN
-Keywords: image reader,menu_parser,menu reader
+Keywords: image reader,menu parser,menu reader
 Platform: UNKNOWN

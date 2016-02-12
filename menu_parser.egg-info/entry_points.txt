@@ -1,4 +1,4 @@
 
 				[console_scripts]
-				 menu = menu_parser.menu_parser:cli
+				  extract_dish = menu_parser.menu_parser:cli
 				 
