@@ -1,1 +1,5 @@
 Click
+PIL
+cv2
+re
+operator
