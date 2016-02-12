@@ -166,7 +166,8 @@ def remove_numeric_part(s):
 		if not i.isdigit():
 			no_digits.append(i)
 
-	
+	# Now join all elements of the list with '', 
+	# which puts all of the characters together.
 	result = ''.join(no_digits)
 	return result
 def main(file_path):

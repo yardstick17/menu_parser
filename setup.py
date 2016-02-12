@@ -2,7 +2,8 @@ from setuptools import setup
 
 setup(
 	name = 'menu_parser' , 
-	vrsion = '0.2' , 
+	packages = ['menu_parser'] ,
+	version = '0.0.4' , 
 	description = 'Tool to read images ,images formatted like standard restaurant-menu' , 
 	author = 'Amit Kushwaha' , 
 	author_email = 'amit_kushwaha@outlook.com' , 
@@ -14,13 +15,12 @@ setup(
     license = 'MIT License',
 	install_requires = [
 			'Click' , 
-			'PIL', 
+			'Pillow >= 2.1.0', 
 			'cv2' , 
-			're' , 
-			'operator'
+			'regex', 
 	] ,
 	entry_points = '''
 				[console_scripts]
-				 menu = menu_parser:cli
+				  = menu_parser.menu_parser:cli
 				 ''' ,
 	)

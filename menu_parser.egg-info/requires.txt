@@ -1,5 +1,4 @@
 Click
-PIL
+Pillow >= 2.1.0
 cv2
-re
-operator
+regex
