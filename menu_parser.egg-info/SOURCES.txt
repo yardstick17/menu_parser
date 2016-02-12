@@ -1,6 +1,10 @@
 menu_parser.py
+pytesser.py
+read_image.py
+reading_white_text.py
 setup.cfg
 setup.py
+smooth_image.py
 menu_parser.egg-info/PKG-INFO
 menu_parser.egg-info/SOURCES.txt
 menu_parser.egg-info/dependency_links.txt
