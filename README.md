@@ -11,3 +11,7 @@ extract_dish 					    ( reads a default image)
 
 extract_dish file_path_to_image		(reads image at path file_path_to_image)
 ```
+
+### Tesseract-ocr
+This tools need tesseract-ocr engine. Help yourself with this --
+* https://github.com/tesseract-ocr/tesseract/wiki
