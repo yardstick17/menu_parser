@@ -106,59 +106,50 @@ def extract_image(file_name):
     P = {}
 
     image_2_text = smooth_image.smooth2(file_name)
-    try:
+    # try:
 
-        for contour in contours:
-            # get rectangle bounding contour
-            [x, y, w, h] = cv2.boundingRect(contour)
-            # draw rectangle around contour on original image
-            if w < 20 or h < 20:
-                continue
-            if w > 500 and h > 500:
-                continue
+    for contour in contours:
+        # get rectangle bounding contour
+        [x, y, w, h] = cv2.boundingRect(contour)
+        # draw rectangle around contour on original image
+        if w < 20 or h < 20:
+            continue
+        if w > 500 and h > 500:
+            continue
 
-            cv2.rectangle(img, (x, y), (x + w + 10, y + h + 10),
-                          (255, 0, 255), 2)
+        cv2.rectangle(img, (x, y), (x + w + 10, y + h + 10),
+                      (255, 0, 255), 2)
 
-            s = 'meta/' + str(ind) + '.tif'
+        s = 'meta/' + str(ind) + '.tif'
 
-            box_read = image_process_extract_string(s, image_2_text, x, y, w,
-                                                    h)
-            #print box_read
-            D[(x, y)] = box_read
-            ind += 1
-            box_read_to_lines = box_read.split('\n')
+        box_read = image_process_extract_string(s, image_2_text, x, y, w,
+                                                h)
+        #print box_read
+        D[(x, y)] = box_read
+        ind += 1
+        box_read_to_lines = box_read.split('\n')
 
-            for lines in box_read_to_lines:
-                P[(x, y)] = lines
-                value_at[index] = (x, y)
-                index += 1
-                x1 = x / 50
-                x1 = x1 * 50
+        for lines in box_read_to_lines:
+            P[(x, y)] = lines
+            value_at[index] = (x, y)
+            index += 1
+            x1 = x / 50
+            x1 = x1 * 50
 
-                tup = [[x, lines]]
-                for key, val in tup:
-                    pix.setdefault(key, []).append(val)
-        cv2.imwrite('boxed_image.jpg', img)
+            tup = [[x, lines]]
+            for key, val in tup:
+                pix.setdefault(key, []).append(val)
+    cv2.imwrite('boxed_image.jpg', img)
 
-    except:
-        print 'In menu_json'
+    # except:
+    #     print 'In menu_json'
 
-    #print D
     final_list2 = []
     sorted_x = sorted(D.items(), key=operator.itemgetter(0))
-    #print sorted_x
     for k, v in sorted(D.items()):
-        #print v
         list_new = str(v).split('\n')
         for l in list_new:
             final_list2.append(l)
-    '''final_list = []
-    for val in pix:
-        for dish in pix[val]:
-            if len(dish) > 1:
-                final_list.append(dish) 
-    '''
     return final_list2
 
 
@@ -201,4 +192,4 @@ def main(file_path):
         line = line.strip()
         if len(line) > 0:
             print line
-#main('test.jpg')
+main('test.jpg')
