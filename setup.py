@@ -16,7 +16,6 @@ setup(
     install_requires=[
         'Click',
         'Pillow >= 2.1.0',
-        'cv2',
         'regex',
     ],
     entry_points='''
