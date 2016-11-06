@@ -33,8 +33,8 @@ def remove_too_many_small_words_dish(Text):
     small_word_count = 0.0
     word_count = 0.0
     new_text = []
-    #print Text
-    #q  = raw_input('ffwe')
+    # print Text
+    # q  = raw_input('ffwe')
     for lines in Text:
         word_count = 0.0
         small_word_count = 0.0
@@ -48,7 +48,7 @@ def remove_too_many_small_words_dish(Text):
 
         except:
             small_word_proportion = 0.0
-        #print 'small_word_proportion: ' , small_word_proportion
+        # print 'small_word_proportion: ' , small_word_proportion
         if small_word_proportion <= 0.4:
             new_text.append(line)
 
@@ -98,7 +98,8 @@ def extract_image(file_name):
             cv2.CHAIN_APPROX_NONE)  # get contours
 
     except:
-        print 'Image_Processing Error in menu_json'
+        print
+        'Image_Processing Error in menu_json'
     ind = 0
     pix = {}
     value_at = {}
@@ -124,7 +125,7 @@ def extract_image(file_name):
 
             box_read = image_process_extract_string(s, image_2_text, x, y, w,
                                                     h)
-            #print box_read
+            # print box_read
             D[(x, y)] = box_read
             ind += 1
             box_read_to_lines = box_read.split('\n')
@@ -142,14 +143,15 @@ def extract_image(file_name):
         cv2.imwrite('boxed_image.jpg', img)
 
     except:
-        print 'In menu_json'
+        print
+        'In menu_json'
 
-    #print D
+    # print D
     final_list2 = []
     sorted_x = sorted(D.items(), key=operator.itemgetter(0))
-    #print sorted_x
+    # print sorted_x
     for k, v in sorted(D.items()):
-        #print v
+        # print v
         list_new = str(v).split('\n')
         for l in list_new:
             final_list2.append(l)
@@ -200,5 +202,7 @@ def main(file_path):
         line = remove_numeric_part(line)
         line = line.strip()
         if len(line) > 0:
-            print line
-#main('test.jpg')
+            print
+            line
+
+# main('test.jpg')
