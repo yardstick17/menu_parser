@@ -1,10 +1,13 @@
-from PIL import Image
-import smooth_image
-import cv2
 import re
+
+import cv2
+from PIL import Image
+
 import pytesser
 import reading_white_text
-import operator
+import smooth_image
+
+INVERT_COLOR_THRESHOLD = 128
 
 
 def make_string_alphanmeric(lines):
@@ -12,7 +15,9 @@ def make_string_alphanmeric(lines):
     return s
 
 
-def thumb(file_name):
+def greyscale_image_mean(file_name):
+    # print(os.path.dirname(os.path.abspath(__file__)))
+
     size = 128, 128
     im = Image.open(file_name)
     im.thumbnail(size)
@@ -29,13 +34,9 @@ def thumb(file_name):
 D = {}
 
 
-def remove_too_many_small_words_dish(Text):
-    small_word_count = 0.0
-    word_count = 0.0
+def remove_too_many_small_words_dish(text):
     new_text = []
-    # print Text
-    # q  = raw_input('ffwe')
-    for lines in Text:
+    for lines in text:
         word_count = 0.0
         small_word_count = 0.0
         line = lines.split(' ')
@@ -66,12 +67,6 @@ def fact(l):
 
 
 def image_process_extract_string(s, mask, x, y, w, h):
-    Y = y
-    X = x
-    if Y - 10 >= 0:
-        Y = Y - 10
-    if X - 10 >= 0:
-        X = X - 10
     im = mask[y: y + h, x: x + w]
     cv2.imwrite(s, im)
     size = 2 * w, 2 * h
@@ -82,87 +77,41 @@ def image_process_extract_string(s, mask, x, y, w, h):
 
 
 def extract_image(file_name):
-    try:
+    img = cv2.imread(file_name)
+    # img_final = cv2.imread(file_name)
 
-        img = cv2.imread(file_name)
-        img_final = cv2.imread(file_name)
+    img2gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    inv_img = (255 - img2gray)
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 2))
 
-        img2gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        inv_img = (255 - img2gray)
-        kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 2))
+    dilated = cv2.dilate(inv_img, kernel, iterations=7)  # dilate
+    type_image = dilated
+    _, contours, hierarchy = cv2.findContours(type_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)  # get contours
 
-        dilated = cv2.dilate(inv_img, kernel, iterations=7)  # dilate
-        type_image = dilated
-        contours, hierarchy = cv2.findContours(type_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)  # get contours
-
-    except:
-        print
-        'Image_Processing Error in menu_json'
     ind = 0
-    pix = {}
-    value_at = {}
-    index = 0
-    P = {}
-
     image_2_text = smooth_image.smooth2(file_name)
-    try:
-
-        for contour in contours:
-            # get rectangle bounding contour
-            [x, y, w, h] = cv2.boundingRect(contour)
-            # draw rectangle around contour on original image
-            if w < 20 or h < 20:
-                continue
-            if w > 500 and h > 500:
-                continue
-
-            cv2.rectangle(img, (x, y), (x + w + 10, y + h + 10), (255, 0, 255), 2)
-
-            s = 'meta/' + str(ind) + '.tif'
-
-            box_read = image_process_extract_string(s, image_2_text, x, y, w, h)
-            # print box_read
-            D[(x, y)] = box_read
-            ind += 1
-            box_read_to_lines = box_read.split('\n')
-
-            for lines in box_read_to_lines:
-                P[(x, y)] = lines;
-                value_at[index] = (x, y)
-                index += 1
-                x1 = x / 50
-                x1 = x1 * 50
-
-                tup = [[x, lines]]
-                for key, val in tup:
-                    pix.setdefault(key, []).append(val)
-        cv2.imwrite('boxed_image.jpg', img)
-
-
-    except:
-        print
-        'In menu_json'
-
-    # print D
+    for contour in contours:
+        # get rectangle bounding contour
+        [x, y, w, h] = cv2.boundingRect(contour)
+        # draw rectangle around contour on original image
+        if w < 20 or h < 20:
+            continue
+        if w > 500 and h > 500:
+            continue
+        cv2.rectangle(img, (x, y), (x + w + 10, y + h + 10), (255, 0, 255), 2)
+        s = '/tmp/' + str(ind) + '.tif'
+        box_read = image_process_extract_string(s, image_2_text, x, y, w, h)
+        D[(x, y)] = box_read
+        ind += 1
     final_list2 = []
-    sorted_x = sorted(D.items(), key=operator.itemgetter(0))
-    # print sorted_x
     for k, v in sorted(D.items()):
-        # print v
         list_new = str(v).split('\n')
         for l in list_new:
             final_list2.append(l)
-
-    '''final_list = []
-    for val in pix:
-        for dish in pix[val]:
-            if len(dish) > 1:
-                final_list.append(dish) 
-    '''
     return final_list2
 
 
-def bhayankar_image_processing(file_path):
+def pre_process_image(file_path):
     norm2dp_image_path = 'norm2dp.jpg'
     final_image_path = 'final_image_processed.jpg'
     im = Image.open(file_path)
@@ -177,24 +126,14 @@ def bhayankar_image_processing(file_path):
 
 
 def remove_numeric_part(s):
-    no_digits = []
-    for i in s:
-        if not i.isdigit():
-            no_digits.append(i)
-
-    # Now join all elements of the list with '',
-    # which puts all of the characters together.
-    result = ''.join(no_digits)
-    return result
+    return ''.join([token for token in s if not s.isdigit()])
 
 
 def main(file_path):
-    z = thumb(file_path)
-    if not z > 128:
+    mean_grey_scale_value = greyscale_image_mean(file_path)
+    if not mean_grey_scale_value > INVERT_COLOR_THRESHOLD:
         file_path = reading_white_text.read_image_white_text(file_path)
-    else:
-        pass
-    file_path = bhayankar_image_processing(file_path)
+    file_path = pre_process_image(file_path)
     x = list(extract_image(file_path))
     x = remove_too_many_small_words_dish(x)
     for line in x:
@@ -202,6 +141,8 @@ def main(file_path):
         line = remove_numeric_part(line)
         line = line.strip()
         if len(line) > 0:
-            print
-            line
-            # main('test.jpg')
+            print (line)
+
+
+# if __name__ == '__main__':
+#     main('test.jpg')

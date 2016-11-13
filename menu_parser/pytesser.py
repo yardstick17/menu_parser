@@ -12,8 +12,8 @@ try:
 except ImportError:
     OPENCV2_AVAILABLE = False
 
-from subprocess import Popen, PIPE
 import os
+from subprocess import Popen, PIPE
 
 PROG_NAME = 'tesseract'
 TEMP_IMAGE = 'tmp.bmp'
@@ -63,16 +63,16 @@ def process_request(input_file, output_file, lang=None, psm=None):
     code = proc.returncode
     if code != 0:
         if code == 2:
-            raise TesseractException, "File not found"
+            raise TesseractException#, "File not found"
         if code == -11:
-            raise TesseractException, "Language code invalid: " + ret[1]
+            raise TesseractException#, "Language code invalid: " + ret[1]
         else:
-            raise TesseractException, ret[1]
+            raise TesseractException#, ret[1]
 
 
 def iplimage_to_string(im, lang=None, psm=None):
     if not OPENCV_AVAILABLE:
-        print "OpenCV not Available"
+        print ("OpenCV not Available")
         return -1
     else:
         cv.SaveImage(TEMP_IMAGE, im)
@@ -93,7 +93,7 @@ def image_to_string(file, psm=None):
 
 def mat_to_string(im, lang=None, psm=None):
     if not OPENCV2_AVAILABLE:
-        print "cv2 is not Available"
+        print( "cv2 is not Available")
         return -1
     else:
         cv2.imwrite(TEMP_IMAGE, im)
@@ -103,4 +103,4 @@ def mat_to_string(im, lang=None, psm=None):
 
 
 if __name__ == '__main__':
-    print image_to_string("image.jpg", "fra", PSM_AUTO)  # Example
+    print (image_to_string("image.jpg", "fra", PSM_AUTO))  # Example)
