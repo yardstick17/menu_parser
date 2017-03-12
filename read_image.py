@@ -1,10 +1,12 @@
-from PIL import Image
-import smooth_image
-import cv2
-import re
-import pytesser
-import reading_white_text
 import operator
+import re
+
+import cv2
+from PIL import Image
+
+from menu_parser import pytesser
+from menu_parser import reading_white_text
+from menu_parser import smooth_image
 
 
 def make_string_alphanmeric(lines):
@@ -85,7 +87,7 @@ def extract_image(file_name):
     try:
 
         img = cv2.imread(file_name)
-        img_final = cv2.imread(file_name)
+        # img_final = cv2.imread(file_name)
 
         img2gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         inv_img = (255 - img2gray)
@@ -93,22 +95,19 @@ def extract_image(file_name):
 
         dilated = cv2.dilate(inv_img, kernel, iterations=7)  # dilate
         type_image = dilated
-        contours, hierarchy = cv2.findContours(
+        _, contours, hierarchy = cv2.findContours(
             type_image, cv2.RETR_EXTERNAL,
             cv2.CHAIN_APPROX_NONE)  # get contours
 
-    except:
-        print
-        'Image_Processing Error in menu_json'
+    except Exception as E:
+        print('Image_Processing Error , ', E)
     ind = 0
     pix = {}
     value_at = {}
     index = 0
     P = {}
-
     image_2_text = smooth_image.smooth2(file_name)
     try:
-
         for contour in contours:
             # get rectangle bounding contour
             [x, y, w, h] = cv2.boundingRect(contour)
@@ -202,7 +201,7 @@ def main(file_path):
         line = remove_numeric_part(line)
         line = line.strip()
         if len(line) > 0:
-            print
-            line
+            print(line)
 
-# main('test.jpg')
+
+main('test.jpg')
