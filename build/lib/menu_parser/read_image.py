@@ -1,11 +1,12 @@
+import operator
 import re
 
 import cv2
 from PIL import Image
 
+import pytesser
 import reading_white_text
 import smooth_image
-from menu_parser import pytesser
 
 INVERT_COLOR_THRESHOLD = 128
 
@@ -76,7 +77,7 @@ def image_process_extract_string(s, mask, x, y, w, h):
 
 def extract_image(file_name):
     img = cv2.imread(file_name)
-    # img_final = cv2.imread(file_name)
+    img_final = cv2.imread(file_name)
 
     img2gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     inv_img = (255 - img2gray)
@@ -84,15 +85,15 @@ def extract_image(file_name):
 
     dilated = cv2.dilate(inv_img, kernel, iterations=7)  # dilate
     type_image = dilated
-    image, contours, hierarchy = cv2.findContours(type_image, cv2.RETR_EXTERNAL,
-                                                  cv2.CHAIN_APPROX_NONE)  # get contours
     _, contours, hierarchy = cv2.findContours(type_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)  # get contours
 
     ind = 0
+    pix = {}
+    value_at = {}
+    index = 0
+    P = {}
     image_2_text = smooth_image.smooth2(file_name)
-    print('----------')
     for contour in contours:
-        print('----------')
         # get rectangle bounding contour
         [x, y, w, h] = cv2.boundingRect(contour)
         # draw rectangle around contour on original image
@@ -100,16 +101,45 @@ def extract_image(file_name):
             continue
         if w > 500 and h > 500:
             continue
+
         cv2.rectangle(img, (x, y), (x + w + 10, y + h + 10), (255, 0, 255), 2)
+
         s = '/tmp/' + str(ind) + '.tif'
+
         box_read = image_process_extract_string(s, image_2_text, x, y, w, h)
+        # print box_read
         D[(x, y)] = box_read
         ind += 1
+        box_read_to_lines = box_read.split('\n')
+
+        for lines in box_read_to_lines:
+            P[(x, y)] = lines;
+            value_at[index] = (x, y)
+            index += 1
+            x1 = x / 50
+            x1 = x1 * 50
+
+            tup = [[x, lines]]
+            for key, val in tup:
+                pix.setdefault(key, []).append(val)
+    cv2.imwrite('boxed_image.jpg', img)
+
+    # print D
     final_list2 = []
+    sorted_x = sorted(D.items(), key=operator.itemgetter(0))
+    # print sorted_x
     for k, v in sorted(D.items()):
+        # print v
         list_new = str(v).split('\n')
         for l in list_new:
             final_list2.append(l)
+
+    '''final_list = []
+    for val in pix:
+        for dish in pix[val]:
+            if len(dish) > 1:
+                final_list.append(dish) 
+    '''
     return final_list2
 
 
@@ -128,11 +158,21 @@ def pre_process_image(file_path):
 
 
 def remove_numeric_part(s):
-    return ''.join([token for token in s if not s.isdigit()])
+    no_digits = []
+    for i in s:
+        if not i.isdigit():
+            no_digits.append(i)
+
+    # Now join all elements of the list with '',
+    # which puts all of the characters together.
+    result = ''.join(no_digits)
+    return result
 
 
 def main(file_path):
     mean_grey_scale_value = greyscale_image_mean(file_path)
+
+    print(mean_grey_scale_value)
     if not mean_grey_scale_value > INVERT_COLOR_THRESHOLD:
         file_path = reading_white_text.read_image_white_text(file_path)
     file_path = pre_process_image(file_path)
@@ -144,4 +184,6 @@ def main(file_path):
         line = line.strip()
         if len(line) > 0:
             print (line)
-main('test.jpg')
+
+
+main('/Users/Amit/Projects/menu_parser/test.jpg')
